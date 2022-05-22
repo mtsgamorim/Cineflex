@@ -1,18 +1,20 @@
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import { useState, useEffect } from 'react';
+import { Link } from "react-router-dom";
 import styled from "styled-components"
 import Footer from './Footer';
 
 
 
 function Times({weekday, date, showtimes}){
+
     return(
         <>
             <Container>
                 <h3>{weekday} - {date}</h3>
                 <Flex>
-                {showtimes.map((show, index) => <Botton key={index}><span>{show.name}</span></Botton>)}
+                {showtimes.map((show, index) =><Link to={`/assentos/${show.id}`} key={index} style={ {textDecoration: 'none'} }><Botton ><span>{show.name}</span></Botton> </Link>)}
                 </Flex>
             </Container>
         </>
@@ -33,6 +35,7 @@ export default function TimeSelection() {
             setTimeMovie(resposta.data.days); 
             setPoster(resposta.data.posterURL);
             setTitle(resposta.data.title);
+            console.log()
         });
 
     }, []);
@@ -44,7 +47,7 @@ export default function TimeSelection() {
             <Title>
                 <h2>Selecione o horário</h2>
             </Title> 
-            {timeMovie.map((m, index) => <Times key={index} weekday={m.weekday} date={m.date} showtimes={m.showtimes}/>)}
+            {timeMovie.map((m, index) => <Times key={index}  weekday={m.weekday} date={m.date} showtimes={m.showtimes}/>)}
             </Margin>
             <Footer img={poster} title = {title}/>
         </>
