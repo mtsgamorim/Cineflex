@@ -22,8 +22,6 @@ export default function MoviesPosters(){
             
         });
     }, []);
-    console.log(filmes);
-    
     
     return (
         <Container>

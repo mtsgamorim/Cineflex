@@ -1,25 +1,32 @@
-import { useParams } from 'react-router-dom';
+import {useParams, useNavigate} from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Link } from "react-router-dom";
-import styled from "styled-components"
+import styled from "styled-components";
 import FooterFinal from './FooterFinal';
 
-function Seat({id, name, isAvailable, setComprar, comprar}) {
+
+
+
+function Seat({id, name, isAvailable, setComprar, comprar, setNameSeats, nameSeats}) {
     const [selecionei, setSelecionei] = useState(false);
     function marcarAscento(){
         let aux = [...comprar];
+        let auxName = [...nameSeats]
         if(!isAvailable) {
             alert("Esse assento não está disponível");
         }
         if(isAvailable && !selecionei){
             setSelecionei(true);
             aux.push(id);
-            setComprar(aux)
+            auxName.push(name);
+            setComprar(aux);
+            setNameSeats(auxName);
         }else {
             setSelecionei(false);
             aux = aux.filter((f) => f !== id);
+            auxName = auxName.filter((f) => f !== name);
             setComprar(aux);
+            setNameSeats(auxName);
         }
     }
 
@@ -40,11 +47,9 @@ export default function SitSelection() {
     const [nome, setNome] = useState("");
     const [cpf, setCpf] = useState("");
     const [comprar, setComprar] = useState([]);
-    console.log(comprar);
-    
-    
-
-    
+    const [nameSeats, setNameSeats] = useState([]);
+    const [horario, setHorario] = useState("");
+    const navigate = useNavigate();
 
     useEffect(() => {
 
@@ -53,22 +58,38 @@ export default function SitSelection() {
             setSeats(resposta.data.seats);
             setMovie(resposta.data.movie);
             setDay(resposta.data.day)
-            console.log(resposta.data);
-            
+            setHorario(resposta.data.name)
         });
         
     }, []);
     
-    
-    
-
+    function comprarLugares(){
+        if(nome.length > 0 && cpf.length > 0 && comprar.length > 0){
+            const objeto = {
+                ids: comprar,
+                name: nome,
+                cpf: cpf
+            }
+            const promise = axios.post("https://mock-api.driven.com.br/api/v5/cineflex/seats/book-many", objeto);
+            promise.then(r => {
+            navigate("/sucesso", {state:{nameSeats:nameSeats, movie:movie, nome:nome, cpf:cpf, day:day, horario:horario}});
+            });
+        }else if(nome.length === 0){
+            alert("Digite o seu nome");
+        }else if(cpf.length === 0){
+            alert("Digite o seu cpf");
+        }else if(comprar.length === 0){
+            alert("Você não selecionou nenhum assento!")
+        }
+    }
+   
     return(
         <>
             <Title>
                 <h2>Selecione o(s) assento(s)</h2>
             </Title> 
             <SeatsLocation>  
-                {seats.map((sit, index) => <Seat key={index} comprar={comprar} setComprar={setComprar} id={sit.id} name={sit.name} isAvailable={sit.isAvailable} />)}
+                {seats.map((sit, index) => <Seat key={index} nameSeats={nameSeats} setNameSeats={setNameSeats} comprar={comprar} setComprar={setComprar} id={sit.id} name={sit.name} isAvailable={sit.isAvailable} />)}
             </SeatsLocation>
             <Info>
                 <div><AssentoS></AssentoS><span>Selecionado</span></div>
@@ -83,7 +104,7 @@ export default function SitSelection() {
                 <h2>CPF do comprador:</h2>
                 <input onChange={e => setCpf(e.target.value)} type="text" placeholder="Digite seu CPF..." />
             </CPFcamp>
-            <Botao onClick={comprar}>
+            <Botao onClick={comprarLugares}>
                 <span>Reservar assento(s)</span>
             </Botao>
             <FooterFinal title={movie.title} img={movie.posterURL} weekday={day.weekday} date={day.date}/>

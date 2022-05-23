@@ -35,7 +35,6 @@ export default function TimeSelection() {
             setTimeMovie(resposta.data.days); 
             setPoster(resposta.data.posterURL);
             setTitle(resposta.data.title);
-            console.log()
         });
 
     }, []);
