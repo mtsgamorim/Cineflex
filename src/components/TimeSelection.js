@@ -39,7 +39,6 @@ export default function TimeSelection() {
 
     }, []);
 
-    console.log(timeMovie);
     return(
         <>
             <Margin>

@@ -50,6 +50,7 @@ export default function SitSelection() {
     const [nameSeats, setNameSeats] = useState([]);
     const [horario, setHorario] = useState("");
     const navigate = useNavigate();
+    
 
     useEffect(() => {
 
@@ -64,7 +65,15 @@ export default function SitSelection() {
     }, []);
     
     function comprarLugares(){
-        if(nome.length > 0 && cpf.length === 11 && comprar.length > 0){
+        let valido = true;
+        for(let i = 0; i < cpf.length; i++){
+            if(cpf[i] === "0" || cpf[i] === "1" || cpf[i] === "2" || cpf[i] === "3" || cpf[i] === "4" || cpf[i] === "5" || cpf[i] === "6" || cpf[i] === "7" || cpf[i] === "8" || cpf[i] === "9"){
+                
+            }else{
+                valido = false
+            }  
+        }
+        if(nome.length > 0 && cpf.length === 11 && valido && comprar.length > 0){
             const objeto = {
                 ids: comprar,
                 name: nome,
@@ -76,7 +85,7 @@ export default function SitSelection() {
             });
         }else if(nome.length === 0){
             alert("Digite o seu nome");
-        }else if(cpf.length !== 11){
+        }else if(cpf.length !== 11 || !valido){
             alert("Digite o seu cpf, apenas números(11 caracteres)");
         }else if(comprar.length === 0){
             alert("Você não selecionou nenhum assento");
