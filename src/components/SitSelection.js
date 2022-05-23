@@ -64,7 +64,7 @@ export default function SitSelection() {
     }, []);
     
     function comprarLugares(){
-        if(nome.length > 0 && cpf.length > 0 && comprar.length > 0){
+        if(nome.length > 0 && cpf.length === 11 && comprar.length > 0){
             const objeto = {
                 ids: comprar,
                 name: nome,
@@ -76,10 +76,10 @@ export default function SitSelection() {
             });
         }else if(nome.length === 0){
             alert("Digite o seu nome");
-        }else if(cpf.length === 0){
-            alert("Digite o seu cpf");
+        }else if(cpf.length !== 11){
+            alert("Digite o seu cpf, apenas números(11 caracteres)");
         }else if(comprar.length === 0){
-            alert("Você não selecionou nenhum assento!")
+            alert("Você não selecionou nenhum assento")
         }
     }
    

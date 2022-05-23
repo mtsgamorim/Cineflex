@@ -12,6 +12,16 @@ function Assentos({number}){
 
 export default function TelaFinal() {
     const location = useLocation();
+    let novoCpf = "";
+    for(let i = 0; i < location.state.cpf.length; i++){
+        if(i === 3 || i === 6){
+            novoCpf = novoCpf + "." + location.state.cpf[i];
+        }else if(i === 9){
+            novoCpf = novoCpf + "-" + location.state.cpf[i];
+        }else{
+            novoCpf = novoCpf + location.state.cpf[i];
+        }
+    }
     return(
         <>
            <AreaTitulo>
@@ -26,7 +36,7 @@ export default function TelaFinal() {
                 {location.state.nameSeats.map((number, index) => <Assentos key={index} number={number}/>)}
                 <h1>Comprador</h1>
                 <p>Nome: {location.state.nome}</p>
-                <p>CPF: {location.state.cpf}</p>
+                <p>CPF: {novoCpf}</p>
            </Container>
            <Link to={"/"} style={ {textDecoration: 'none'} }>
            <Button>
