@@ -3,30 +3,62 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link } from "react-router-dom";
 import styled from "styled-components"
+import FooterFinal from './FooterFinal';
 
-function Seat({id, name, isAvailable}) {
+function Seat({id, name, isAvailable, setComprar, comprar}) {
+    const [selecionei, setSelecionei] = useState(false);
+    function marcarAscento(){
+        let aux = [...comprar];
+        if(!isAvailable) {
+            alert("Esse assento não está disponível");
+        }
+        if(isAvailable && !selecionei){
+            setSelecionei(true);
+            aux.push(id);
+            setComprar(aux)
+        }else {
+            setSelecionei(false);
+            aux = aux.filter((f) => f !== id);
+            setComprar(aux);
+        }
+    }
+
     return(
-        <Assento isAvailable = {isAvailable}>
+        <Assento onClick={marcarAscento} isAvailable = {isAvailable} selecionei = {selecionei}>
             {name.length >= 2 ? <p>{name}</p> : <p>0{name}</p>}
         </Assento>
     )
 }
 
+
+
 export default function SitSelection() {
     const {idSessao} = useParams();
     const [seats, setSeats] = useState([]);
-    const seats1 = [];
+    const [movie, setMovie] = useState([]);
+    const [day, setDay] = useState([]);
+    const [nome, setNome] = useState("");
+    const [cpf, setCpf] = useState("");
+    const [comprar, setComprar] = useState([]);
+    console.log(comprar);
+    
+    
+
+    
 
     useEffect(() => {
 
         const promise = axios.get(`https://mock-api.driven.com.br/api/v5/cineflex/showtimes/${idSessao}/seats`);
         promise.then(resposta => {
-            setSeats(resposta.data.seats) ;
+            setSeats(resposta.data.seats);
+            setMovie(resposta.data.movie);
+            setDay(resposta.data.day)
+            console.log(resposta.data);
             
         });
         
     }, []);
-    console.log(seats)
+    
     
     
 
@@ -36,7 +68,7 @@ export default function SitSelection() {
                 <h2>Selecione o(s) assento(s)</h2>
             </Title> 
             <SeatsLocation>  
-                {seats.map((sit, index) => <Seat key={index} id={sit.id} name={sit.name} isAvailable={sit.isAvailable} />)}
+                {seats.map((sit, index) => <Seat key={index} comprar={comprar} setComprar={setComprar} id={sit.id} name={sit.name} isAvailable={sit.isAvailable} />)}
             </SeatsLocation>
             <Info>
                 <div><AssentoS></AssentoS><span>Selecionado</span></div>
@@ -45,12 +77,16 @@ export default function SitSelection() {
             </Info>
             <Comprador>
                 <h2>Nome do comprador:</h2>
-                <input type="text" placeholder="Digite seu nome..." />
+                <input onChange={e => setNome(e.target.value)} type="text" placeholder="Digite seu nome..." />
             </Comprador>
-            <CPF>
+            <CPFcamp>
                 <h2>CPF do comprador:</h2>
-                <input type="text" placeholder="Digite seu CPF..." />
-            </CPF>
+                <input onChange={e => setCpf(e.target.value)} type="text" placeholder="Digite seu CPF..." />
+            </CPFcamp>
+            <Botao onClick={comprar}>
+                <span>Reservar assento(s)</span>
+            </Botao>
+            <FooterFinal title={movie.title} img={movie.posterURL} weekday={day.weekday} date={day.date}/>
         </>
     )
 }
@@ -82,7 +118,7 @@ const Assento = styled.div`
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: ${(props) => props.isAvailable ? "#C3CFD9" : "#FBE192"};
+    background-color: ${(props) => (props.isAvailable && props.selecionei && "#8DD7CF") || (props.isAvailable && !(props.selecionei) && "#C3CFD9") || !(props.isAvailable) && "#FBE192"};
 
     p{
         font-family: 'Roboto', sans-serif;
@@ -169,7 +205,7 @@ const Comprador = styled.div`
     }
 `;
 
-const CPF = styled.div`
+const CPFcamp = styled.div`
     margin-top: 40px;
     width: 327px;
     margin-left: auto;
@@ -186,4 +222,26 @@ const CPF = styled.div`
         border: 1px solid #D5D5D5;
         border-radius: 3px;
     }
+`;
+
+const Botao = styled.div `
+    width: 225px;
+    height: 42px;
+    background-color: #E8833A;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 30px;
+    margin-bottom: 140px;
+    span {
+        font-family: 'Roboto';
+        font-weight: 400;
+        font-size: 18px;
+        line-height: 21px;
+        color: #FFFFFF;
+    }
+
 `;
