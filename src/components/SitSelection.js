@@ -79,7 +79,7 @@ export default function SitSelection() {
         }else if(cpf.length !== 11){
             alert("Digite o seu cpf, apenas números(11 caracteres)");
         }else if(comprar.length === 0){
-            alert("Você não selecionou nenhum assento")
+            alert("Você não selecionou nenhum assento");
         }
     }
    
